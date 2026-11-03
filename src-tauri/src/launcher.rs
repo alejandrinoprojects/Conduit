@@ -250,10 +250,26 @@ pub fn resolve_java_path(app: &AppHandle) -> PathBuf {
     let app_data = app.path().app_data_dir().unwrap_or_else(|_| PathBuf::from("."));
     let local_java = app_data.join("runtimes").join("java21").join("bin").join("java.exe");
     if local_java.exists() {
-        local_java
-    } else {
-        PathBuf::from("java")
+        return local_java;
     }
+
+    // Check common Java 21+ installations on Windows
+    let potential_paths = [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.0-hotspot\\bin\\java.exe",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-21\\bin\\java.exe",
+        "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe",
+        "C:\\Program Files\\Microsoft\\jdk-21\\bin\\java.exe",
+        "C:\\Users\\Dean Alejandrino\\AppData\\Local\\Programs\\IntelliJ IDEA 2026.1.1\\jbr\\bin\\java.exe",
+    ];
+
+    for path_str in &potential_paths {
+        let p = PathBuf::from(path_str);
+        if p.exists() {
+            return p;
+        }
+    }
+
+    PathBuf::from("java")
 }
 
 pub async fn ensure_portable_java21(app: &AppHandle) -> Result<PathBuf, String> {
