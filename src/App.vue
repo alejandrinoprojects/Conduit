@@ -153,6 +153,8 @@ async function handleLogin() {
 // Instance Provisioning
 async function handleInstallInstance() {
   isInstalling.value = true;
+  activeTab.value = "console";
+  logs.value.push("[Conduit] Provisioning NeoForge 1.21.1 game & server instance...");
   try {
     await invoke("install_instance", {
       instanceDir: instanceDir.value,
@@ -168,12 +170,15 @@ async function handleInstallInstance() {
 
 // Server Orchestration
 async function handleStartServer() {
+  activeTab.value = "console";
+  logs.value.push("[Conduit] Initiating dedicated server launch...");
   try {
     await invoke("start_server", {
       instanceDir: instanceDir.value,
       ramGb: ramGb.value,
     });
   } catch (e: any) {
+    logs.value.push(`[ERROR] Server start failed: ${e?.message || e}`);
     alert("Failed to start server: " + (e?.message || e));
   }
 }
