@@ -31,3 +31,10 @@ src-tauri/.cargo/
 instance/
 runtimes/
 auth.json
+
+# Local binaries, shortcuts & backups
+*.bak
+*.exe
+*.lnk
+*.dll
+.agents/

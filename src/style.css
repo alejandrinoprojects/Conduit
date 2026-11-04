@@ -1,9 +1,144 @@
 @import "tailwindcss";
 
+@theme {
+  /* Surfaces & Structural Layout */
+  --color-canvas: #11151A;
+  --color-sidebar: #151A20;
+  --color-card: #1B222A;
+  --color-card-hover: #222B35;
+  --color-elevated: #27323D;
+  --color-elevated-hover: #323F4D;
+  --color-border: #303B47;
+  --color-border-subtle: #242D37;
+
+  /* Aliases for surfaces */
+  --color-surface-canvas: #11151A;
+  --color-surface-sidebar: #151A20;
+  --color-surface-card: #1B222A;
+  --color-surface-elevated: #27323D;
+
+  /* Typography */
+  --color-text-primary: #E2E8ED;
+  --color-text-secondary: #9AA7B5;
+  --color-text-muted: #657585;
+  --color-primary: #E2E8ED;
+  --color-secondary: #9AA7B5;
+  --color-muted: #657585;
+
+  /* Cyan Interactive Accents */
+  --color-cyan-accent: #45C5D9;
+  --color-cyan-highlight: #76DCE8;
+  --color-cyan-subtle: rgba(69, 197, 217, 0.12);
+  --color-cyan-border: rgba(69, 197, 217, 0.35);
+  --color-cyan: #45C5D9;
+
+  /* Orange Brand & Primary Actions */
+  --color-orange-accent: #F39A36;
+  --color-orange-hover: #E08925;
+  --color-orange-subtle: rgba(243, 154, 54, 0.14);
+  --color-orange-border: rgba(243, 154, 54, 0.35);
+  --color-orange: #F39A36;
+
+  /* Functional Status Colors */
+  --color-status-success: #3DB877;
+  --color-status-success-subtle: rgba(61, 184, 119, 0.15);
+  --color-status-error: #E05252;
+  --color-status-error-subtle: rgba(224, 82, 82, 0.15);
+  --color-status-warning: #E5A83B;
+  --color-status-warning-subtle: rgba(229, 168, 59, 0.15);
+  --color-success: #3DB877;
+  --color-error: #E05252;
+  --color-warning: #E5A83B;
+}
+
 @layer base {
-  body {
-    background-color: #111215;
-    color: #f3f4f6;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  * {
+    border-color: #303B47;
   }
+  body {
+    background-color: #11151A;
+    color: #E2E8ED;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom Desktop Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #303B47;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #45C5D9;
+}
+
+/* Custom Range Slider Thumb & Track */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #27323D;
+  border-radius: 9999px;
+  border: 1px solid #303B47;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #E2E8ED;
+  border: 2px solid #45C5D9;
+  margin-top: -6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: #76DCE8;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #27323D;
+  border-radius: 9999px;
+  border: 1px solid #303B47;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #E2E8ED;
+  border: 2px solid #45C5D9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background: #76DCE8;
+}
+
+input[type="range"]:focus-visible {
+  outline: none;
 }
