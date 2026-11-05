@@ -534,6 +534,29 @@ function generateSvgLine(points: number[], minVal: number, maxVal: number, w: nu
               </button>
             </div>
 
+            <!-- Public Direct Address for Friends without Conduit -->
+            <div v-if="displayPublicIp" class="flex items-center bg-sidebar border border-amber-500/40 rounded px-3 py-1.5 gap-2.5">
+              <div class="flex flex-col">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                  <span class="text-[9px] uppercase font-bold text-amber-400 tracking-wider">Vanilla Direct Join (No Conduit)</span>
+                </div>
+                <span class="font-mono text-xs font-bold text-amber-200 select-all tracking-wide">
+                  {{ displayPublicIp }}
+                </span>
+              </div>
+              <button
+                type="button"
+                class="h-6 px-2.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                @click="copyPublicIp"
+                title="Friends can paste this directly into normal vanilla Minecraft without Conduit."
+              >
+                <Check v-if="copiedPublicIp" class="w-3.5 h-3.5 text-status-success" />
+                <Copy v-else class="w-3.5 h-3.5 text-amber-400" />
+                <span>{{ copiedPublicIp ? 'Copied' : 'Copy Direct IP' }}</span>
+              </button>
+            </div>
+
             <!-- Conduit End-to-End Encrypted Room Code (Zero-Leak) -->
             <div class="flex items-center bg-cyan-500/10 border border-cyan-500/40 rounded px-3.5 py-1.5 gap-3 shadow-inner">
               <div class="flex flex-col">

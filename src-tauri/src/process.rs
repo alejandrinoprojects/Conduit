@@ -219,26 +219,64 @@ pub async fn start_server_internal(
     let _ = app.emit("server-status", ServerStatus::Starting);
 
     // 3. Initialize Built-in Conduit Network Tunnel (Zero-config P2P encrypted tunnel)
+    // + Automated Reverse Tunnel (Enables vanilla Minecraft friends to connect without Conduit or port forwarding)
     let world_name_copy = world_name.clone().unwrap_or_else(|| "World".to_string());
     let app_clone = app.clone();
     let state_clone = state.inner.clone();
     tokio::spawn(async move {
+        // A. Conduit WireGuard P2P Host Tunnel
         match crate::network::conduit_host_realm(world_name_copy, Some(25565)).await {
             Ok(info) => {
-                let display_addr = info.public_endpoint.clone().unwrap_or_else(|| "127.0.0.1:25565".to_string());
-                {
-                    let mut guard = state_clone.lock().await;
-                    guard.tunnel_url = Some(display_addr.clone());
-                }
-                let _ = app_clone.emit("tunnel-status", display_addr.clone());
                 let _ = app_clone.emit("conduit-room-code", info.room_code);
-                if let Some(ref ep) = info.public_endpoint {
-                    let _ = app_clone.emit("public-endpoint", ep.clone());
-                }
             }
             Err(e) => {
                 eprintln!("[Conduit Network] Failed to initialize realm tunnel: {}", e);
             }
+        }
+
+        // B. Zero-Config Public TCP Reverse Tunnel (Vanilla Minecraft Friend Support)
+        let mut ssh_cmd = tokio::process::Command::new("ssh");
+        ssh_cmd.args([
+            "-o", "StrictHostKeyChecking=no",
+            "-o", "ServerAliveInterval=30",
+            "-o", "ServerAliveCountMax=3",
+            "-R", "0:localhost:25565",
+            "serveo.net",
+        ]);
+        ssh_cmd.stdout(Stdio::piped());
+        ssh_cmd.stderr(Stdio::piped());
+
+        #[cfg(target_os = "windows")]
+        {
+            ssh_cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
+        }
+
+        if let Ok(mut child) = ssh_cmd.spawn() {
+            if let Some(stdout) = child.stdout.take() {
+                let app_inner = app_clone.clone();
+                let state_inner = state_clone.clone();
+                tokio::spawn(async move {
+                    let mut reader = BufReader::new(stdout).lines();
+                    while let Ok(Some(line)) = reader.next_line().await {
+                        // Look for: Forwarding TCP connections from serveousercontent.com:XXXXX
+                        if let Some(idx) = line.find("Forwarding TCP connections from ") {
+                            let addr = line[idx + "Forwarding TCP connections from ".len()..].trim();
+                            if !addr.is_empty() {
+                                {
+                                    let mut guard = state_inner.lock().await;
+                                    guard.tunnel_url = Some(addr.to_string());
+                                }
+                                let _ = app_inner.emit("tunnel-status", addr.to_string());
+                                let _ = app_inner.emit("public-endpoint", addr.to_string());
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+
+            let mut guard = state_clone.lock().await;
+            guard.tunnel_child = Some(child);
         }
     });
 
